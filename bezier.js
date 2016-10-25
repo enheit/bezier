@@ -1,19 +1,26 @@
+/* 
+ * More info at:
+ * http://html5tutorial.com/how-to-draw-n-grade-bezier-curve-with-canvas-api/
+ *
+ */
+
 class Bezier {
+	// points - array of points. [{x: 0, y: 1}, {x: 1, y: 2}, etc.];
 	constructor(points) {
 		this.points = [...points];
-
 		return this;
 	}
 
-	// n = Pow of polynom
-	// t = step
-	calc(t) {
-		// The intermediate point
+	// returns intermediate point
+	calc(step) {
+		// intermediate point
 		let point = {x: 0, y: 0};
+		// n is number of points - 1;
 		let n = this.points.length - 1;
 
 		for(let i = 0; i <= n; i++) {
-			let b = this.basisBezier(i, n, t);
+			let b = this.getBezierBasis(i, n, step);
+
 			point.x += this.points[i].x * b;
 			point.y += this.points[i].y * b;
 		}
@@ -21,21 +28,16 @@ class Bezier {
 		return point;
 	}
 
-	basisBezier(i, n, t) {
-		let b = this.combination(n, i) * Math.pow(t, i) * Math.pow(1 - t, n - i);
-		return b;
+	getBezierBasis(i, n, step) {
+		return this.J(n, i) * Math.pow(step, i) * Math.pow(1 - step, n - i);
 	}
 
-	combination(n, i) {
-		let nF = this.getFactorial(n);
-		let iF = this.getFactorial(i);
-		// n - i
-		let subtraction = this.getFactorial(n - i);
-
-		return nF / (iF * subtraction);
+	J(n, i) {
+		return this.F(n) / (this.F(i) * this.F(n - i));
 	}
 
-	getFactorial(n) {
-		return n == 0 ? 1 : n * this.getFactorial(n - 1);
+	// F = factorial
+	F(n) {
+		return n == 0 ? 1 : n * this.F(n - 1);
 	}
 }
